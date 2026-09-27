@@ -34,8 +34,7 @@ public static class RateLimitingExtensions
 
     private static void ConfigureGlobalPolicy(RateLimiterOptions options, GlobalRateLimitSettings settings)
     {
-        options.AddPolicy(RateLimitingPolicies.Global,
-                httpContext =>
+        options.AddPolicy(RateLimitingPolicies.Global, httpContext =>
                 {
                     var partitionKey = GetPartitionKey(httpContext);
 
@@ -53,8 +52,7 @@ public static class RateLimitingExtensions
 
     private static void ConfigureBurstPolicy(RateLimiterOptions options, BurstRateLimitSettings settings)
     {
-        options.AddTokenBucketLimiter(RateLimitingPolicies.Burst,
-            limiter =>
+        options.AddTokenBucketLimiter(RateLimitingPolicies.Burst, limiter =>
             {
                 limiter.TokenLimit = settings.TokenLimit;
                 limiter.TokensPerPeriod = settings.TokensPerPeriod;
@@ -67,8 +65,7 @@ public static class RateLimitingExtensions
 
     private static void ConfigureConcurrencyPolicy(RateLimiterOptions options, ConcurrencyRateLimitSettings settings)
     {
-        options.AddConcurrencyLimiter(RateLimitingPolicies.Expensive,
-            limiter =>
+        options.AddConcurrencyLimiter(RateLimitingPolicies.Expensive, limiter =>
             {
                 limiter.PermitLimit = settings.PermitLimit;
                 limiter.QueueLimit = settings.QueueLimit;
@@ -78,8 +75,7 @@ public static class RateLimitingExtensions
 
     private static void ConfigureStrictPolicy(RateLimiterOptions options, StrictRateLimitSettings settings)
     {
-        options.AddFixedWindowLimiter(RateLimitingPolicies.Strict,
-            limiter =>
+        options.AddFixedWindowLimiter(RateLimitingPolicies.Strict, limiter =>
             {
                 limiter.PermitLimit = settings.PermitLimit;
                 limiter.Window = System.TimeSpan.FromSeconds(settings.WindowSeconds);
