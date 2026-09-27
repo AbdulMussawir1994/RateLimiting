@@ -1,0 +1,27 @@
+@RateLimiting_HostAddress = https://localhost:7116
+
+### Named global fixed window (only applies to this action)
+GET {{RateLimiting_HostAddress}}/api/Dashboard/Global
+Accept: application/json
+
+### Token bucket
+GET {{RateLimiting_HostAddress}}/api/Dashboard/Burst
+Accept: application/json
+
+### Concurrency: send overlapping requests; each request takes two seconds
+GET {{RateLimiting_HostAddress}}/api/Dashboard/Expensive
+Accept: application/json
+
+### Fixed window
+GET {{RateLimiting_HostAddress}}/api/Dashboard/Strict
+Accept: application/json
+
+### Sliding window
+GET {{RateLimiting_HostAddress}}/api/Dashboard/Sliding
+Accept: application/json
+
+# All rejected requests return HTTP 429 with application/problem+json.
+# Body fields: type, title, status, detail, policy, limiterType, retryAfterSeconds, traceId.
+# Retry-After is included when the limiter can estimate it (not concurrency).
+# The global policy is per user/IP; other policies share capacity across callers.
+# Each action uses only its own policy. Actions without a policy are not limited.
