@@ -4,6 +4,7 @@ public class RateLimitingOptions
 {
     public const string SectionName = "RateLimiting";
     public GlobalRateLimitSettings Global { get; init; } = new();
+    public BurstRateLimitSettings UserBurst { get; init; } = new();
     public BurstRateLimitSettings Burst { get; init; } = new();
     public ConcurrencyRateLimitSettings Concurrency { get; init; } = new();
     public StrictRateLimitSettings Strict { get; init; } = new();
@@ -18,6 +19,7 @@ public static class RateLimitingPolicies
     public const string Expensive = "expensive";
     public const string Strict = "strict";
     public const string Sliding = "sliding";
+    public const string UserBurst = "user-burst";
 }
 
 public class SlidingRateLimitSettings
@@ -35,6 +37,13 @@ public class GlobalRateLimitSettings
     public int QueueLimit { get; init; }
 }
 
+public class StrictRateLimitSettings
+{
+    public int PermitLimit { get; init; } = 20;
+    public int WindowSeconds { get; init; } = 60;
+    public int QueueLimit { get; init; }
+}
+
 public class BurstRateLimitSettings
 {
     public int TokenLimit { get; init; } = 100;
@@ -47,11 +56,4 @@ public class ConcurrencyRateLimitSettings
 {
     public int PermitLimit { get; init; } = 50;
     public int QueueLimit { get; init; } = 10;
-}
-
-public class StrictRateLimitSettings
-{
-    public int PermitLimit { get; init; } = 20;
-    public int WindowSeconds { get; init; } = 60;
-    public int QueueLimit { get; init; }
 }

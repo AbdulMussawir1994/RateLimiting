@@ -26,6 +26,7 @@ public static class RateLimitingExtensions
             ConfigureConcurrencyPolicy(options, settings.Concurrency);
             ConfigureStrictPolicy(options, settings.Strict);
             ConfigureSlidingPolicy(options, settings.Sliding);
+            ConfigureUserBurstPolicy(options, settings.UserBurst);
             ConfigureRejectionHandler(options);
         });
 
@@ -98,6 +99,27 @@ public static class RateLimitingExtensions
         });
     }
 
+    private static void ConfigureUserBurstPolicy(RateLimiterOptions options, BurstRateLimitSettings settings)
+    {
+        options.AddPolicy(RateLimitingPolicies.UserBurst, httpContext =>
+        {
+            var partitionKey = GetPartitionKey(httpContext);
+
+            return RateLimitPartition.GetTokenBucketLimiter(
+                partitionKey,
+                _ => new TokenBucketRateLimiterOptions
+                {
+                    TokenLimit = settings.TokenLimit,
+                    TokensPerPeriod = settings.TokensPerPeriod,
+                    ReplenishmentPeriod = TimeSpan.FromSeconds(
+                        settings.ReplenishmentPeriodSeconds),
+                    QueueLimit = settings.QueueLimit,
+                    QueueProcessingOrder = QueueProcessingOrder.OldestFirst,
+                    AutoReplenishment = true
+                });
+        });
+    }
+
     private static void ConfigureRejectionHandler(RateLimiterOptions options)
     {
         options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
@@ -112,6 +134,7 @@ public static class RateLimitingExtensions
                 RateLimitingPolicies.Expensive => "concurrency",
                 RateLimitingPolicies.Strict => "fixed-window",
                 RateLimitingPolicies.Sliding => "sliding-window",
+                RateLimitingPolicies.UserBurst => "token-bucket",
                 _ => "unknown"
             };
 

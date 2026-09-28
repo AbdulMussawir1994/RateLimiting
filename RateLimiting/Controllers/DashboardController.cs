@@ -17,6 +17,17 @@ public class DashboardController : ControllerBase
         return Ok("Dashboard");
     }
 
+    [HttpGet("UserBurst")]
+    [EnableRateLimiting(RateLimitingPolicies.UserBurst)]
+    public ActionResult GetUserBurst()
+    {
+        return Ok(new
+        {
+            message = "Request accepted.",
+            policy = RateLimitingPolicies.UserBurst
+        });
+    }
+
     [HttpGet("Burst")]
     [EnableRateLimiting(RateLimitingPolicies.Burst)]
     public ActionResult GetBurst()
